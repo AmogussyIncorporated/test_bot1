@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Option Bot</title>
+    <title>SCP HR chat bot</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background: linear-gradient(135deg, #fcfcfc, #000000);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -33,7 +33,7 @@
         }
         
         .chat-header {
-            background: #4e73df;
+            background: #000000;
             color: white;
             padding: 20px;
             text-align: center;
@@ -67,8 +67,8 @@
         }
         
         .user-message {
-            background: #4e73df;
-            color: white;
+            background: #cfcfcf;
+            color: black;
             align-self: flex-end;
             border-bottom-right-radius: 5px;
         }
@@ -81,7 +81,7 @@
         }
         
         .option-button {
-            background: #4e73df;
+            background: #5e5c5c;
             color: white;
             border: none;
             border-radius: 18px;
@@ -92,7 +92,7 @@
         }
         
         .option-button:hover {
-            background: #3a56c4;
+            background: #000000;
         }
         
         .chat-input {
@@ -110,7 +110,7 @@
         }
         
         .chat-input button {
-            background: #4e73df;
+            background: #000000;
             color: white;
             border: none;
             border-radius: 20px;
@@ -121,7 +121,7 @@
         }
         
         .chat-input button:hover {
-            background: #3a56c4;
+            background: #5e5c5c;
         }
         
         .typing-indicator {
@@ -183,7 +183,7 @@
             const botResponses = {
                 greeting: "Good day, [CLASSIFIED]! This is automatical SCP HR Bot. How can I assist you today?",
                 help: "I can help you with the following options:",
-                services: "If you have questions and need to contact with our HR agent [CLASSIFIED] or [CLASSIFIED], then please press "Contact" button.",
+                services: "If you have questions and need to contact with our HR agent [CLASSIFIED] or [CLASSIFIED], then please press Contact button.",
                 contact: "Our HR [CLASSIFIED] or [CLASSIFIED] will contact with you immediatly via your ID connected phone number. Please stand by.",
                 info: "This is automatical SCP HR Bot. We thank you for choosing to work with us, [CLASSIFIED]. We hope all your work days will go smoothly and without any [CLASSIFIED]!",
                 goodbye: "Thank you for chatting with us. Have a great day!",
