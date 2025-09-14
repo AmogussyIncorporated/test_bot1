@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Option Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: #4e73df;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chat-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .chat-messages {
+            padding: 20px;
+            height: 350px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background: #f0f2f5;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user-message {
+            background: #4e73df;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .option-button {
+            background: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .option-button:hover {
+            background: #3a56c4;
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .chat-input button {
+            background: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .chat-input button:hover {
+            background: #3a56c4;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            background: #f0f2f5;
+            padding: 12px 15px;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #888;
+            margin-right: 5px;
+            animation: typingAnimation 1.4s infinite both;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>SCP HR chat</h1>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            
+            // Bot responses based on user selection
+            const botResponses = {
+                greeting: "Good day, [CLASSIFIED]! This is automatical SCP HR Bot. How can I assist you today?",
+                help: "I can help you with the following options:",
+                services: "If you have questions and need to contact with our HR agent [CLASSIFIED] or [CLASSIFIED], then please press "Contact" button.",
+                contact: "Our HR [CLASSIFIED] or [CLASSIFIED] will contact with you immediatly via your ID connected phone number. Please stand by.",
+                info: "This is automatical SCP HR Bot. We thank you for choosing to work with us, [CLASSIFIED]. We hope all your work days will go smoothly and without any [CLASSIFIED]!",
+                goodbye: "Thank you for chatting with us. Have a great day!",
+                default: "I'm not sure how to respond to that. Please select one of the options provided."
+            };
+            
+            // Initial options presented to the user
+            const initialOptions = [
+                { text: "Services", value: "services" },
+                { text: "Contact", value: "contact" },
+                { text: "Information", value: "info" },
+                { text: "Help", value: "help" }
+            ];
+            
+            // Initialize the chat
+            setTimeout(() => {
+                addBotMessage(botResponses.greeting);
+                showOptions(initialOptions);
+            }, 500);
+            
+            // Function to add a bot message
+            function addBotMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'bot-message');
+                messageElement.textContent = message;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to add a user message
+            function addUserMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'user-message');
+                messageElement.textContent = message;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                const typingElement = document.createElement('div');
+                typingElement.classList.add('typing-indicator');
+                typingElement.id = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    dot.classList.add('typing-dot');
+                    typingElement.appendChild(dot);
+                }
+                
+                chatMessages.appendChild(typingElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                return typingElement;
+            }
+            
+            // Function to show options to the user
+            function showOptions(options) {
+                const optionsContainer = document.createElement('div');
+                optionsContainer.classList.add('options-container');
+                
+                options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-button');
+                    button.textContent = option.text;
+                    button.addEventListener('click', () => {
+                        // Remove all options
+                        document.querySelectorAll('.options-container').forEach(el => el.remove());
+                        
+                        // Add user message
+                        addUserMessage(option.text);
+                        
+                        // Show typing indicator
+                        const typingIndicator = showTypingIndicator();
+                        
+                        // Bot responds after a short delay
+                        setTimeout(() => {
+                            typingIndicator.remove();
+                            addBotMessage(botResponses[option.value] || botResponses.default);
+                            
+                            // Show initial options again after response
+                            setTimeout(() => {
+                                showOptions(initialOptions);
+                            }, 800);
+                        }, 1500);
+                    });
+                    
+                    optionsContainer.appendChild(button);
+                });
+                
+                chatMessages.appendChild(optionsContainer);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to handle user input
+            function handleUserInput() {
+                const message = userInput.value.trim();
+                
+                if (message !== '') {
+                    // Add user message
+                    addUserMessage(message);
+                    
+                    // Clear input
+                    userInput.value = '';
+                    
+                    // Show typing indicator
+                    const typingIndicator = showTypingIndicator();
+                    
+                    // Bot responds after a short delay
+                    setTimeout(() => {
+                        typingIndicator.remove();
+                        
+                        // Check if the message matches any option
+                        let response = botResponses.default;
+                        for (const option of initialOptions) {
+                            if (message.toLowerCase().includes(option.value.toLowerCase()) || 
+                                message.toLowerCase().includes(option.text.toLowerCase())) {
+                                response = botResponses[option.value];
+                                break;
+                            }
+                        }
+                        
+                        addBotMessage(response);
+                        
+                        // Show initial options again after response
+                        setTimeout(() => {
+                            showOptions(initialOptions);
+                        }, 800);
+                    }, 1500);
+                }
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', handleUserInput);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleUserInput();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
